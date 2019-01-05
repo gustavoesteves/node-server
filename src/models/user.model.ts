@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { sign } from "jsonwebtoken";
-import { get } from "nconf";
+import { get } from "config";
 import { compareSync, genSalt, hash } from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
 

@@ -1,5 +1,5 @@
 import express = require("express");
-import { get } from "nconf";
+import { get } from "config";
 import { info } from "winston";
 import loginfo from "./startup/loginfo.startup";
 import config from "./startup/config.startup";
