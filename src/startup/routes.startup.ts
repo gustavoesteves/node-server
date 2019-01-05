@@ -3,6 +3,7 @@ import { initialize, session } from "passport";
 import { get } from "nconf";
 import { json, urlencoded } from "body-parser";
 import expressSession = require("express-session");
+import { error } from "../middlewares/error.middleware";
 
 export default function routes(app: Application) {
     // set up our express application
@@ -19,4 +20,5 @@ export default function routes(app: Application) {
     app.use(session());
     
     // routes
+    app.use(error);
 }

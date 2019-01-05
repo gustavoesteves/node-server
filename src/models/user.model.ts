@@ -3,7 +3,6 @@ import { sign } from "jsonwebtoken";
 import { get } from "nconf";
 import { compareSync, genSalt, hash } from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
-import { error } from "util";
 
 const UserSchema = new Schema({
     local: {
@@ -56,7 +55,7 @@ UserSchema.pre('validate', function (next) {
 
     if (this.isModified('local.password') || this.get('local.password') != '') {
         if (!/^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{7,20}$/.test(this.get('local.password')))
-            next(new error('Password needs at least one special caracter and minimun 8 caracters'));
+            throw new Error('Password needs at least one special caracter and minimun 8 caracters');
     }
 
     next();
