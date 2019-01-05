@@ -6,14 +6,8 @@ export default function config() {
     // 2. Environment variables
     env([
         'CLOUD_BUCKET',
-        'DATA_BACKEND',
+        'DATABASE',
         'GCLOUD_PROJECT',
-        'MEMCACHE_URL',
-        'MEMCACHE_USERNAME',
-        'MEMCACHE_PASSWORD',
-        'MYSQL_USER',
-        'MYSQL_PASSWORD',
-        'INSTANCE_CONNECTION_NAME',
         'NODE_ENV',
         'OAUTH2_CLIENT_ID',
         'OAUTH2_CLIENT_SECRET',
@@ -30,17 +24,14 @@ export default function config() {
         // configure the appropriate settings for each storage engine below.
         // If you are unsure, use datastore as it requires no additional
         // configuration.
-        DATA_BACKEND: 'datastore',
+        DATABASE: 'mongodb://localhost/default-project',
 
         // This is the id of your project in the Google Cloud Developers Console.
         GCLOUD_PROJECT: '',
 
-        DATABASE: 'mongodb://localhost/default-project',
-        MYSQL_PASSWORD: '',
-
         OAUTH2_CLIENT_ID: '',
         OAUTH2_CLIENT_SECRET: '',
-        OAUTH2_CALLBACK: 'http://localhost:8080/auth/google/callback',
+        OAUTH2_CALLBACK: '',
 
         PORT: 3000,
 
