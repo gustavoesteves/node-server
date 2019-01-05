@@ -40,7 +40,7 @@ const UserSchema = new Schema({
 });
 
 UserSchema.pre('save', async function (next) {
-    if (this.isModified('local.password') || this.get('local.password') != '') {
+    if (this.isModified('local.password')) {
         const salt = await genSalt(10);
         this.set('local.password', await hash(this.get('local.password'), salt));
     }
@@ -48,12 +48,12 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.pre('validate', function (next) {
-    if (this.isModified('local.email') || this.get('local.email') != '') {
+    if (this.isModified('local.email')) {
         if (!/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(this.get('local.email')))
             throw new Error('Invalid email');
     }
 
-    if (this.isModified('local.password') || this.get('local.password') != '') {
+    if (this.isModified('local.password')) {
         if (!/^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{7,20}$/.test(this.get('local.password')))
             throw new Error('Password needs at least one special caracter and minimun 8 caracters');
     }
@@ -61,14 +61,15 @@ UserSchema.pre('validate', function (next) {
     next();
 });
 
-// checking if password is valid using bcrypt
-UserSchema.methods.validPassword = function (password: string) {
-    return compareSync(password, this.get('local.password'));
-};
-
-UserSchema.methods.generateAuthToken = function (_id: string) {
-    const token = sign({ _id: _id }, get('SECRET'));
-    return token;
-}
+UserSchema.method({
+    comparePassword: function (password: string) {
+        return compareSync(password, this.get('local.password'));
+    },
+    generateAuthToken: function (_id: string) {
+        // const token = sign({ _id: _id }, get('SECRET'));
+        const token = sign({ _id: _id }, 'SECRET');
+        return token;
+    }
+});
 
 export const UserModel = model<IUserModel>('User', UserSchema);

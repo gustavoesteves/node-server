@@ -35,4 +35,7 @@ export interface IUser {
     }
 }
 
-export interface IUserModel extends IUser, Document { }
+export interface IUserModel extends IUser, Document {
+    comparePassword(password: string): boolean;
+    generateAuthToken(_id: string): string;
+}

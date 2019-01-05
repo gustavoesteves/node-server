@@ -1,8 +1,13 @@
+import { connect, disconnect } from "mongoose";
 import { IUserModel } from "../../../interfaces/user.interface";
 import { UserModel } from "../../../models/user.model";
 
 describe('user model', () => {
     let newUser: IUserModel;
+
+    beforeAll(() => {
+        connect('mongodb://localhost/default-project-test', { useNewUrlParser: true });
+    });
 
     beforeEach(() => {
         newUser = new UserModel({
@@ -23,16 +28,44 @@ describe('user model', () => {
         });
     });
 
-    afterEach(() => {
-        UserModel.deleteMany({});
+    afterEach(async () => {
+        await UserModel.deleteMany({
+            profile: {
+                name: 'aaaaa',
+                gender: 'a',
+                location: 'a',
+                website: 'a',
+                picture: 'a'
+            }
+        });
+    });
+
+    afterAll(() => {
+        disconnect();
+    });
+
+    test('save just profile', async (done) => {
+        await UserModel.deleteMany({});
+        const otherUser = new UserModel({
+            profile: {
+                name: 'aaaaa',
+                gender: 'a',
+                location: 'a',
+                website: 'a',
+                picture: 'a'
+            }
+        });
+        otherUser.save()
+            .then(value => done())
+            .catch(reason => done(reason));
     });
 
     test('invalid password', (done) => {
         newUser.set('local.password', 'a');
         newUser.set('local.email', 'a@a.com');
         newUser.save()
-            .catch(error => {
-                expect(error.message).toBe('Password needs at least one special caracter and minimun 8 caracters');
+            .catch(reason => {
+                expect(reason.message).toBe('Password needs at least one special caracter and minimun 8 caracters');
                 done();
             });
     });
@@ -41,17 +74,60 @@ describe('user model', () => {
         newUser.set('local.password', 'A1@aaaaa');
         newUser.set('local.email', '@a.com');
         newUser.save()
-            .catch(error => {
-                expect(error.message).toBe('Invalid email');
+            .catch(reason => {
+                expect(reason.message).toBe('Invalid email');
                 done();
             });
     });
 
-    test('everything alright', (done) => {
+    test('register user HP', (done) => {
         newUser.set('local.password', 'A1@aaaaa');
         newUser.set('local.email', 'a@a.com');
         newUser.save()
             .then(value => done())
-            .catch(error => done());
+            .catch(reason => done(reason));
+    });
+
+    test('password comparison goes wrong', (done) => {
+        newUser.set('local.password', 'A1@aaaaa');
+        newUser.set('local.email', 'a@a.com');
+        newUser.save()
+            .then(value => {
+                expect(newUser.comparePassword('a')).toBeFalsy();
+                done();
+            })
+            .catch(reason => done(reason));
+    });
+
+    test('password comparison HP', (done) => {
+        newUser.set('local.password', 'A1@aaaaa');
+        newUser.set('local.email', 'a@a.com');
+        newUser.save()
+            .then(value => {
+                expect(newUser.comparePassword('A1@aaaaa')).toBeTruthy();
+                done();
+            })
+            .catch(reason => done(reason));
+    });
+
+    test('generation token goes wrong', (done) => {
+        newUser.set('local.password', 'A1@aaaaa');
+        newUser.set('local.email', 'a@a.com');
+        newUser.save()
+            .then(value => {
+                done(expect(newUser.generateAuthToken('a')).not.toBe('a'));
+            })
+            .catch(reason => done(reason));
+    });
+
+    test('generation token HP', async (done) => {
+        newUser.set('local.password', 'A1@aaaaa');
+        newUser.set('local.email', 'a@a.com');
+        newUser.save()
+            .then(value => {
+                const token = newUser.generateAuthToken(newUser.get('_id'));
+                done(expect(newUser.generateAuthToken(newUser.get('_id'))).toBe(token));
+            })
+            .catch(reason => done(reason));
     });
 });
