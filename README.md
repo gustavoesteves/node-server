@@ -4,6 +4,6 @@ A default boilerplate Node.js project with Mongodb, RESTful API, Authorization a
 
 ## To start
 
-. npm i
-. configure your DATABASE variable in config/default.json
-. npm start
+- npm i
+- configure your DATABASE variable in config/default.json
+- npm start
