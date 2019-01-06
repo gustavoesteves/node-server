@@ -1,17 +1,15 @@
-import { Request } from "express";
+import { IUserModel } from "../interfaces/user.interface";
 import { UserModel } from "../models/user.model";
 
-async function login(req: Request) {
-    const email = req.body.email;
-    const password = req.body.password;
+async function login(email: string, password: string) {
+    const user: IUserModel = await UserModel.findOne({ 'local.email': email });
 
-    const user = await UserModel.findOne({ 'local.email': email });
     if (!user)
         throw new Error('Invalid email or password');
-    if (await user.comparePassword(password))
+    if (!await user.comparePassword(password))
         throw new Error('Invalid email or password');
 
     return user;
 }
 
-export default { login };
+export default { login }

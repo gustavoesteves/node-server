@@ -14,7 +14,7 @@ describe('user controller', () => {
     });
 
     async function newUser() {
-        const newUser = new UserModel({
+        const newUser: IUserModel = new UserModel({
             local: {
                 token: '123456789',
                 email: 'a@a.com',
@@ -27,14 +27,37 @@ describe('user controller', () => {
         return newUser;
     }
 
-    test('Invalid email or password - email', () => {
-        newUser();
-        supertest(server)
-            .post('/api/user/login')
-            .send({ email: '@a.com', password: 'A1@aaaaa' })
-            .expect(400)
-            .end((err, res) => {
-                if (err) throw err;
-            });
+    describe('login tests', () => {
+        test('Invalid email or password - email', async () => {
+            await UserModel.deleteMany({});
+            await newUser();
+            return supertest(server)
+                .post('/api/user/login')
+                .send({ email: '@a.com', password: '' })
+                .expect(500)
+                .then(value => {
+                    expect(JSON.parse(value.text)).toBe('Invalid email or password');
+                });
+        });
+
+        test('Invalid email or password - password', async () => {
+            await UserModel.deleteMany({});
+            await newUser();
+            return supertest(server)
+                .post('/api/user/login')
+                .send({ email: 'a@a.com', password: 'a' })
+                .expect(500)
+                .then(value => {
+                    expect(JSON.parse(value.text)).toBe('Invalid email or password');
+                });
+        });
+
+        test('login HP', () => {
+            return supertest(server)
+                .post('/api/user/login')
+                .send({ email: 'a@a.com', password: 'A1@aaaaa' })
+                .expect(200);
+        });
     });
+
 });

@@ -1,6 +1,6 @@
 import { Application } from "express";
 import { initialize, session } from "passport";
-import { get } from "nconf";
+import { get } from "config";
 import { json, urlencoded } from "body-parser";
 import expressSession = require("express-session");
 import user from "../controllers/user.controller";

@@ -1,12 +1,17 @@
 import { connect, disconnect } from "mongoose";
+import { get } from "config";
 import { IUserModel } from "../../../interfaces/user.interface";
 import { UserModel } from "../../../models/user.model";
 
 describe('user model', () => {
     let newUser: IUserModel;
 
-    beforeAll(() => {
-        connect('mongodb://localhost/default-project-test', { useNewUrlParser: true });
+    beforeAll(async () => {
+        await connect(get('DATABASE'), { useNewUrlParser: true });
+    });
+
+    afterAll(async () => {
+        await disconnect();
     });
 
     beforeEach(() => {
@@ -39,11 +44,7 @@ describe('user model', () => {
             }
         });
     });
-
-    afterAll(() => {
-        disconnect();
-    });
-
+;
     test('save just profile', async (done) => {
         await UserModel.deleteMany({});
         const otherUser = new UserModel({

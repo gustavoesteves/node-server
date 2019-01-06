@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import { sign } from "jsonwebtoken";
 import { get } from "config";
-import { compareSync, genSalt, hash } from "bcrypt";
+import { compareSync, genSalt, hash } from "bcryptjs";
 import { IUserModel } from "../interfaces/user.interface";
 
 const UserSchema = new Schema({
@@ -66,8 +66,7 @@ UserSchema.method({
         return compareSync(password, this.get('local.password'));
     },
     generateAuthToken: function (_id: string) {
-        // const token = sign({ _id: _id }, get('SECRET'));
-        const token = sign({ _id: _id }, 'SECRET');
+        const token = sign({ _id: _id }, get('SECRET'));
         return token;
     }
 });

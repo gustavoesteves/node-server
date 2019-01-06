@@ -1,14 +1,15 @@
 import { Router } from "express";
 import service from "../services/user.service";
 
-const routes = Router();
+const router = Router();
 
 /**
  * POST /login
  * Sign in using email and password.
  */
-routes.post('/login', (req, res, next) => {
-    service.login(req)
+router.post('/login', (req, res, next) => {
+    console.log('controller....');
+    service.login(req.body.email, req.body.password)
         .then(value => res.json(value))
         .catch(reason => next(reason));
 });
@@ -33,4 +34,4 @@ routes.post('/login', (req, res, next) => {
 * Create a random token, then the send user an email with a reset link.
 */
 
-export default routes;
+export default router;
